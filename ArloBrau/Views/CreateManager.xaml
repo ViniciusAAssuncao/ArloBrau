@@ -1,0 +1,170 @@
+﻿<Window x:Class="ArloBrau.Views.CreateManager"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ArloBrau.Views"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="Arlo Brau" Height="450" Width="800"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        BorderBrush="Black"
+        BorderThickness="2"
+        Loaded="Window_Loaded">
+    <Grid>
+        <Grid x:Name="LoadingGrid" Background="White" Visibility="Visible">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <iconPacks:PackIconFontAwesome x:Name="spinner" Kind="ArrowsSpinSolid" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="50" Foreground="Black" Spin="True"/>
+                <TextBlock Text="Carregando..." HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" Foreground="Black"/>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="MainContentGrid" Visibility="Collapsed">
+            <Grid.Background>
+                <ImageBrush ImageSource="pack://application:,,,/Assets/Images/create_manager_screen_background.jpg" />
+            </Grid.Background>
+            <Border Background="White" CornerRadius="10" Width="500" Height="350" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Grid>
+                    <Button Width="40" Height="40" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top" Click="onHomeHandler" Background="Transparent" BorderBrush="Transparent" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Grid>
+                                    <iconPacks:PackIconFontAwesome x:Name="icon" Kind="CircleArrowLeftSolid" Width="24" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" />
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Storyboard.TargetName="icon" Storyboard.TargetProperty="(iconPacks:PackIconFontAwesome.Foreground).(SolidColorBrush.Color)" To="#C0C0C0" Duration="0:0:0.3"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <ColorAnimation Storyboard.TargetName="icon" Storyboard.TargetProperty="(iconPacks:PackIconFontAwesome.Foreground).(SolidColorBrush.Color)" To="Black" Duration="0:0:0.3"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="icon" Property="RenderTransform">
+                                            <Setter.Value>
+                                                <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <TabControl Margin="10,60,10,10">
+                        <TabItem Header="Criar treinador">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="Nome:" Margin="5"/>
+                                    <TextBox x:Name="nameTextBox" Width="200" Margin="5"/>
+                                    <TextBlock x:Name="nameError" Foreground="Red" Margin="5" Visibility="Collapsed">Nome não pode ficar vazio</TextBlock>
+
+                                    <TextBlock Text="Data de nascimento:" Margin="5"/>
+                                    <DatePicker x:Name="birthDatePicker" Width="200" Margin="5" SelectedDateChanged="BirthDatePicker_SelectedDateChanged"/>
+                                    <TextBlock x:Name="ageTextBlock" Margin="5"></TextBlock>
+                                    <TextBlock x:Name="birthDateError" Foreground="Red" Margin="5" Visibility="Collapsed">Data de nascimento inválida</TextBlock>
+
+                                    <TextBlock Text="Nacionalidade:" Margin="5"/>
+                                    <ComboBox x:Name="nationalityComboBox" Width="200" Margin="5">
+                                        <ComboBoxItem Content="Brasil"/>
+                                        <ComboBoxItem Content="Argentina"/>
+                                        <ComboBoxItem Content="Espanha"/>
+                                    </ComboBox>
+                                    <TextBlock x:Name="nationalityError" Foreground="Red" Margin="5" Visibility="Collapsed">Nacionalidade não pode ficar vazia</TextBlock>
+
+                                    <TextBlock Text="Formação técnica:" Margin="5"/>
+                                    <ComboBox x:Name="technicalFormationComboBox" Width="200" Margin="5">
+                                        <ComboBoxItem Content="--"/>
+                                        <ComboBoxItem Content="Licença Nacional C"/>
+                                        <ComboBoxItem Content="Licença Nacional B"/>
+                                        <ComboBoxItem Content="Licença Nacional A"/>
+                                        <ComboBoxItem Content="Licença Continental A1"/>
+                                        <ComboBoxItem Content="Licença Continental A2"/>
+                                        <ComboBoxItem Content="Licença da Federação"/>
+                                        <ComboBoxItem Content="Licença Continental Pro"/>
+                                        <ComboBoxItem Content="Licença Mundial"/>
+                                        <ComboBoxItem Content="Licença Genérica Mundial"/>
+                                        <ComboBoxItem Content="Licença VITA Mundial"/>
+                                    </ComboBox>
+                                    <TextBlock x:Name="technicalFormationError" Foreground="Red" Margin="5" Visibility="Collapsed">Formação técnica não pode ficar vazia</TextBlock>
+
+                                    <TextBlock Text="Histórico de jogador:" Margin="5"/>
+                                    <ComboBox x:Name="playerHistoryComboBox" Width="200" Margin="5">
+                                        <ComboBoxItem Content="--"/>
+                                        <ComboBoxItem Content="Jogador Amador"/>
+                                        <ComboBoxItem Content="Jogador Nacional A"/>
+                                        <ComboBoxItem Content="Jogador Nacional B"/>
+                                        <ComboBoxItem Content="Ídolo Nacional"/>
+                                        <ComboBoxItem Content="Jogador Internacional"/>
+                                        <ComboBoxItem Content="Estrela Internacional"/>
+                                        <ComboBoxItem Content="Lenda Mundial"/>
+                                    </ComboBox>
+                                    <TextBlock x:Name="playerHistoryError" Foreground="Red" Margin="5" Visibility="Collapsed">Histórico de jogador não pode ficar vazio</TextBlock>
+
+                                    <TextBlock Text="Altura (cm):" Margin="5"/>
+                                    <TextBox x:Name="heightTextBox" Width="200" Margin="5"/>
+                                    <TextBlock x:Name="heightError" Foreground="Red" Margin="5" Visibility="Collapsed">Altura inválida</TextBlock>
+
+                                    <TextBlock Text="Cor de pele:" Margin="5"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <ComboBox x:Name="skinColorComboBox" Width="200" Margin="5" SelectionChanged="SkinColor_SelectionChanged">
+                                            <ComboBoxItem Content="Branco 1"/>
+                                            <ComboBoxItem Content="Branco 2"/>
+                                            <ComboBoxItem Content="Branco 3"/>
+                                            <ComboBoxItem Content="Branco 4"/>
+                                            <ComboBoxItem Content="Pardo 1"/>
+                                            <ComboBoxItem Content="Pardo 2"/>
+                                            <ComboBoxItem Content="Pardo 3"/>
+                                            <ComboBoxItem Content="Pardo 4"/>
+                                            <ComboBoxItem Content="Negro 1"/>
+                                            <ComboBoxItem Content="Negro 2"/>
+                                            <ComboBoxItem Content="Negro 3"/>
+                                            <ComboBoxItem Content="Negro 4"/>
+                                            <ComboBoxItem Content="Mediterrâneo"/>
+                                            <ComboBoxItem Content="Mestiço"/>
+                                        </ComboBox>
+                                        <Border BorderBrush="Black" BorderThickness="1" Margin="5">
+                                            <Rectangle x:Name="skinColorDisplay" Width="20" Height="20" Fill="Transparent"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock x:Name="skinColorError" Foreground="Red" Margin="5" Visibility="Collapsed">Cor de pele não pode ficar vazia</TextBlock>
+
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                        <CheckBox x:Name="vitaCheckbox" Content="VITA" Margin="5" Checked="Certification_Checked" Unchecked="Certification_Unchecked"/>
+                                        <CheckBox x:Name="ccslCheckbox" Content="CCSL" Margin="5" Checked="Certification_Checked" Unchecked="Certification_Unchecked"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="certificationError" Foreground="Red" Margin="5" Visibility="Collapsed">Formação técnica não pode ficar vazia</TextBlock>
+
+                                    <Button Content="Criar treinador" HorizontalAlignment="Center" VerticalAlignment="Center" Click="CreateTrainer_Click"/>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+                        <TabItem Header="Selecionar treinadores">
+                            <Grid Background="#D3D3D3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Ainda em desenvolvimento" Foreground="Gray" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10"/>
+                                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel>
+                                        <TextBlock Text="Ainda em desenvolvimento" Foreground="Gray" Margin="10"/>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
