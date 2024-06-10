@@ -1,14 +1,14 @@
 ﻿using System.Windows;
 
-
 namespace ArloBrau
 {
     public partial class App : Application
     {
-
-        public App()
+        protected override void OnStartup(StartupEventArgs e)
         {
-            InitializeComponent();
+            base.OnStartup(e);
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
         }
     }
 }

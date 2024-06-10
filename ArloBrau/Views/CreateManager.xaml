@@ -63,26 +63,40 @@
                     <TabControl Margin="10,60,10,10">
                         <TabItem Header="Criar treinador">
                             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock Text="Nome:" Margin="5"/>
-                                    <TextBox x:Name="nameTextBox" Width="200" Margin="5"/>
-                                    <TextBlock x:Name="nameError" Foreground="Red" Margin="5" Visibility="Collapsed">Nome não pode ficar vazio</TextBlock>
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="400">
+                                    <TextBlock Text="Nome:" Margin="5" TextAlignment="Center"/>
+                                    <TextBox x:Name="nameTextBox" Width="200" Margin="5" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="nameError" Foreground="Red" Margin="5" Visibility="Collapsed" TextAlignment="Center">Nome não pode ficar vazio</TextBlock>
 
-                                    <TextBlock Text="Data de nascimento:" Margin="5"/>
-                                    <DatePicker x:Name="birthDatePicker" Width="200" Margin="5" SelectedDateChanged="BirthDatePicker_SelectedDateChanged"/>
-                                    <TextBlock x:Name="ageTextBlock" Margin="5"></TextBlock>
-                                    <TextBlock x:Name="birthDateError" Foreground="Red" Margin="5" Visibility="Collapsed">Data de nascimento inválida</TextBlock>
+                                    <TextBlock Text="Data de nascimento:" Margin="5" TextAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <ComboBox x:Name="birthDayComboBox" Width="50" Margin="5" SelectionChanged="BirthDate_SelectionChanged">
+                                        </ComboBox>
+                                        <ComboBox x:Name="birthMonthComboBox" Width="50" Margin="5" SelectionChanged="BirthDate_SelectionChanged">
+                                        </ComboBox>
+                                        <ComboBox x:Name="birthYearComboBox" Width="80" Margin="5" SelectionChanged="BirthDate_SelectionChanged">
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <TextBlock x:Name="ageTextBlock" Margin="5" TextAlignment="Center"></TextBlock>
+                                    <TextBlock x:Name="birthDateError" Foreground="Red" Margin="5" Visibility="Collapsed" TextAlignment="Center">Data de nascimento inválida</TextBlock>
 
-                                    <TextBlock Text="Nacionalidade:" Margin="5"/>
-                                    <ComboBox x:Name="nationalityComboBox" Width="200" Margin="5">
+                                    <TextBlock Text="Data de início:" Margin="5" TextAlignment="Center"/>
+                                    <ComboBox x:Name="startDateComboBox" Width="200" Margin="5" HorizontalAlignment="Center" SelectionChanged="StartDate_SelectionChanged">
+                                        <ComboBoxItem Content="Temporada 2124/25 AH"/>
+                                        <ComboBoxItem Content="Temporada 2125/26 AH"/>
+                                    </ComboBox>
+                                    <TextBlock x:Name="startDateTextBlock" Margin="5" TextAlignment="Center"></TextBlock>
+
+                                    <TextBlock Text="Nacionalidade:" Margin="5" TextAlignment="Center"/>
+                                    <ComboBox x:Name="nationalityComboBox" Width="200" Margin="5" HorizontalAlignment="Center">
                                         <ComboBoxItem Content="Brasil"/>
                                         <ComboBoxItem Content="Argentina"/>
                                         <ComboBoxItem Content="Espanha"/>
                                     </ComboBox>
-                                    <TextBlock x:Name="nationalityError" Foreground="Red" Margin="5" Visibility="Collapsed">Nacionalidade não pode ficar vazia</TextBlock>
+                                    <TextBlock x:Name="nationalityError" Foreground="Red" Margin="5" Visibility="Collapsed" TextAlignment="Center">Nacionalidade não pode ficar vazia</TextBlock>
 
-                                    <TextBlock Text="Formação técnica:" Margin="5"/>
-                                    <ComboBox x:Name="technicalFormationComboBox" Width="200" Margin="5">
+                                    <TextBlock Text="Formação técnica:" Margin="5" TextAlignment="Center"/>
+                                    <ComboBox x:Name="technicalFormationComboBox" Width="200" Margin="5" HorizontalAlignment="Center">
                                         <ComboBoxItem Content="--"/>
                                         <ComboBoxItem Content="Licença Nacional C"/>
                                         <ComboBoxItem Content="Licença Nacional B"/>
@@ -95,10 +109,10 @@
                                         <ComboBoxItem Content="Licença Genérica Mundial"/>
                                         <ComboBoxItem Content="Licença VITA Mundial"/>
                                     </ComboBox>
-                                    <TextBlock x:Name="technicalFormationError" Foreground="Red" Margin="5" Visibility="Collapsed">Formação técnica não pode ficar vazia</TextBlock>
+                                    <TextBlock x:Name="technicalFormationError" Foreground="Red" Margin="5" Visibility="Collapsed" TextAlignment="Center">Formação técnica não pode ficar vazia</TextBlock>
 
-                                    <TextBlock Text="Histórico de jogador:" Margin="5"/>
-                                    <ComboBox x:Name="playerHistoryComboBox" Width="200" Margin="5">
+                                    <TextBlock Text="Histórico de jogador:" Margin="5" TextAlignment="Center"/>
+                                    <ComboBox x:Name="playerHistoryComboBox" Width="200" Margin="5" HorizontalAlignment="Center">
                                         <ComboBoxItem Content="--"/>
                                         <ComboBoxItem Content="Jogador Amador"/>
                                         <ComboBoxItem Content="Jogador Nacional A"/>
@@ -108,14 +122,14 @@
                                         <ComboBoxItem Content="Estrela Internacional"/>
                                         <ComboBoxItem Content="Lenda Mundial"/>
                                     </ComboBox>
-                                    <TextBlock x:Name="playerHistoryError" Foreground="Red" Margin="5" Visibility="Collapsed">Histórico de jogador não pode ficar vazio</TextBlock>
+                                    <TextBlock x:Name="playerHistoryError" Foreground="Red" Margin="5" Visibility="Collapsed" TextAlignment="Center">Histórico de jogador não pode ficar vazio</TextBlock>
 
-                                    <TextBlock Text="Altura (cm):" Margin="5"/>
-                                    <TextBox x:Name="heightTextBox" Width="200" Margin="5"/>
-                                    <TextBlock x:Name="heightError" Foreground="Red" Margin="5" Visibility="Collapsed">Altura inválida</TextBlock>
+                                    <TextBlock Text="Altura (cm):" Margin="5" TextAlignment="Center"/>
+                                    <TextBox x:Name="heightTextBox" Width="200" Margin="5" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="heightError" Foreground="Red" Margin="5" Visibility="Collapsed" TextAlignment="Center">Altura inválida</TextBlock>
 
-                                    <TextBlock Text="Cor de pele:" Margin="5"/>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Cor de pele:" Margin="5" TextAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <ComboBox x:Name="skinColorComboBox" Width="200" Margin="5" SelectionChanged="SkinColor_SelectionChanged">
                                             <ComboBoxItem Content="Branco 1"/>
                                             <ComboBoxItem Content="Branco 2"/>
@@ -136,13 +150,13 @@
                                             <Rectangle x:Name="skinColorDisplay" Width="20" Height="20" Fill="Transparent"/>
                                         </Border>
                                     </StackPanel>
-                                    <TextBlock x:Name="skinColorError" Foreground="Red" Margin="5" Visibility="Collapsed">Cor de pele não pode ficar vazia</TextBlock>
+                                    <TextBlock x:Name="skinColorError" Foreground="Red" Margin="5" Visibility="Collapsed" TextAlignment="Center">Cor de pele não pode ficar vazia</TextBlock>
 
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                                         <CheckBox x:Name="vitaCheckbox" Content="VITA" Margin="5" Checked="Certification_Checked" Unchecked="Certification_Unchecked"/>
                                         <CheckBox x:Name="ccslCheckbox" Content="CCSL" Margin="5" Checked="Certification_Checked" Unchecked="Certification_Unchecked"/>
                                     </StackPanel>
-                                    <TextBlock x:Name="certificationError" Foreground="Red" Margin="5" Visibility="Collapsed">Formação técnica não pode ficar vazia</TextBlock>
+                                    <TextBlock x:Name="certificationError" Foreground="Red" Margin="5" Visibility="Collapsed" TextAlignment="Center">Formação técnica não pode ficar vazia</TextBlock>
 
                                     <Button Content="Criar treinador" HorizontalAlignment="Center" VerticalAlignment="Center" Click="CreateTrainer_Click"/>
                                 </StackPanel>

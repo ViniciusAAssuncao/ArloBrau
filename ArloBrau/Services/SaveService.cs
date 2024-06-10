@@ -1,6 +1,9 @@
-﻿using MySql.Data.MySqlClient;
+﻿using ArloBrau.Models;
+using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace ArloBrau.Services
 {
@@ -78,6 +81,104 @@ namespace ArloBrau.Services
                 {
                     transaction.Rollback();
                     throw new Exception("Erro ao atualizar o jogador com o save_id", ex);
+                }
+            }
+        }
+
+        public List<Save> GetAllSaves()
+        {
+            List<Save> saves = new List<Save>();
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                MySqlCommand cmd = new MySqlCommand("SELECT save_id, save_name, created_at FROM saves", connection);
+
+                try
+                {
+                    connection.Open();
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            saves.Add(new Save
+                            {
+                                SaveId = reader.GetInt32("save_id"),
+                                SaveName = reader.GetString("save_name"),
+                                SaveDate = reader.GetDateTime("created_at")
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao acessar o banco de dados", ex);
+                }
+            }
+
+            return saves;
+        }
+
+        public async Task<List<Save>> GetAllSavesAsync()
+        {
+            List<Save> saves = new List<Save>();
+
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                MySqlCommand cmd = new MySqlCommand("SELECT save_id, save_name, created_at FROM saves", connection);
+
+                try
+                {
+                    await connection.OpenAsync();
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            saves.Add(new Save
+                            {
+                                SaveId = reader.GetInt32("save_id"),
+                                SaveName = reader.GetString("save_name"),
+                                SaveDate = reader.GetDateTime("created_at")
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao acessar o banco de dados", ex);
+                }
+            }
+
+            return saves;
+        }
+
+        public async Task DeleteSaveAsync(int saveId)
+        {
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                MySqlCommand cmd = connection.CreateCommand();
+                MySqlTransaction transaction = connection.BeginTransaction();
+                cmd.Connection = connection;
+                cmd.Transaction = transaction;
+
+                try
+                {
+                    cmd.CommandText = "SET FOREIGN_KEY_CHECKS = 0";
+                    await cmd.ExecuteNonQueryAsync();
+
+                    cmd.CommandText = "DELETE FROM saves WHERE save_id = @saveId";
+                    cmd.Parameters.AddWithValue("@saveId", saveId);
+                    await cmd.ExecuteNonQueryAsync();
+
+                    cmd.CommandText = "SET FOREIGN_KEY_CHECKS = 1";
+                    await cmd.ExecuteNonQueryAsync();
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception("Erro ao deletar o save no banco de dados", ex);
                 }
             }
         }
