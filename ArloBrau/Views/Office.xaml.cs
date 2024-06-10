@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Windows;
+using ArloBrau.Models;
 using ArloBrau.Services;
 
 namespace ArloBrau.Views
@@ -8,20 +9,33 @@ namespace ArloBrau.Views
     public partial class Office : Window
     {
         private readonly SaveService _saveService;
+        private readonly GameDateService _gameDateService;
         private readonly string _playerId;
+        private readonly string _connectionString;
+        private readonly bool _isNewPlayer;
 
-        public Office(string playerId, string connectionString)
+        public Office(string playerId, string connectionString, bool isNewPlayer = true)
         {
             InitializeComponent();
             _playerId = playerId;
+            _connectionString = connectionString;
+            _isNewPlayer = isNewPlayer;
             _saveService = new SaveService(connectionString);
+            _gameDateService = new GameDateService(connectionString);
 
             Loaded += Office_Loaded;
         }
 
         private void Office_Loaded(object sender, RoutedEventArgs e)
         {
-            ShowSaveDialog();
+            if (_isNewPlayer)
+            {
+                ShowSaveDialog();
+            }
+            else
+            {
+                LoadExistingSave();
+            }
         }
 
         private void ShowSaveDialog()
@@ -62,12 +76,21 @@ namespace ArloBrau.Views
             {
                 int newSaveId = _saveService.CreateSave(saveName);
                 _saveService.AssignSaveToPlayer(_playerId, newSaveId);
+
+                _gameDateService.UpdateGameDateWithSaveId(newSaveId);
+
                 MessageBox.Show("Jogo salvo com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (DuplicateNameException ex)
             {
                 throw;
             }
+        }
+
+        private void LoadExistingSave()
+        {
+            // Adicione aqui o código para carregar o save existente
+            // Carregue as informações do save e inicialize os componentes necessários
         }
     }
 }

@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
@@ -16,7 +15,9 @@ namespace ArloBrau.Views
     {
         private readonly PlayerManagerService _playerManagerService;
         private readonly SaveService _saveService;
+        private readonly GameDateService _gameDateService;
         private readonly string _connectionString;
+        private DateTime _baseGameDate;
 
         public CreateManager()
         {
@@ -26,19 +27,100 @@ namespace ArloBrau.Views
             _connectionString = dbConfig.ConnectionString;
             _playerManagerService = new PlayerManagerService(_connectionString);
             _saveService = new SaveService(_connectionString);
+            _gameDateService = new GameDateService(_connectionString);
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await LoadContentAsync();
+            _baseGameDate = new DateTime(2125, 1, 1);
+
+            PopulateDateSelectors();
 
             MainContentGrid.Visibility = Visibility.Visible;
             LoadingGrid.Visibility = Visibility.Collapsed;
         }
 
+        private void PopulateDateSelectors()
+        {
+            for (int i = 1; i <= 31; i++)
+            {
+                birthDayComboBox.Items.Add(new ComboBoxItem { Content = i.ToString("D2") });
+            }
+
+            for (int i = 1; i <= 12; i++)
+            {
+                birthMonthComboBox.Items.Add(new ComboBoxItem { Content = i.ToString("D2") });
+            }
+
+            for (int i = 2090; i >= 2025; i--)
+            {
+                birthYearComboBox.Items.Add(new ComboBoxItem { Content = i.ToString() });
+            }
+        }
+
         public async Task LoadContentAsync()
         {
             await Task.Delay(500);
+        }
+
+        private void BirthDate_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FormatBirthDate();
+        }
+
+        private void FormatBirthDate()
+        {
+            if (birthDayComboBox.SelectedItem != null && birthMonthComboBox.SelectedItem != null && birthYearComboBox.SelectedItem != null)
+            {
+                string day = ((ComboBoxItem)birthDayComboBox.SelectedItem).Content.ToString();
+                string month = ((ComboBoxItem)birthMonthComboBox.SelectedItem).Content.ToString();
+                string year = ((ComboBoxItem)birthYearComboBox.SelectedItem).Content.ToString();
+
+                if (DateTime.TryParseExact($"{day}/{month}/{year}", "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDate))
+                {
+                    int age = 2125 - parsedDate.Year;
+                    if (new DateTime(2125, 1, 1).DayOfYear < parsedDate.DayOfYear) age--;
+
+                    age = Math.Max(0, age);
+
+                    ageTextBlock.Text = $"Idade: {age} anos";
+                    if (age < 35)
+                    {
+                        birthDateError.Visibility = Visibility.Visible;
+                        birthDateError.Text = "Treinador deve ter pelo menos 35 anos.";
+                    }
+                    else
+                    {
+                        birthDateError.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    birthDateError.Visibility = Visibility.Visible;
+                    birthDateError.Text = "Data de nascimento inválida";
+                }
+            }
+        }
+
+        private void StartDate_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (startDateComboBox.SelectedItem != null)
+            {
+                string selectedSeason = ((ComboBoxItem)startDateComboBox.SelectedItem).Content.ToString();
+                switch (selectedSeason)
+                {
+                    case "Temporada 2124/25 AH":
+                        startDateTextBlock.Text = "Seu jogo iniciará na temporada 24/25 AH (01/05/2124 AH)";
+                        break;
+                    case "Temporada 2125/26 AH":
+                        startDateTextBlock.Text = "Seu jogo iniciará na temporada 25/26 AH (01/05/2125 AH)";
+                        break;
+                    default:
+                        startDateTextBlock.Text = string.Empty;
+                        break;
+                }
+            }
         }
 
         private void onHomeHandler(object sender, RoutedEventArgs e)
@@ -85,47 +167,6 @@ namespace ArloBrau.Views
             foreach (ComboBoxItem item in technicalFormationComboBox.Items)
             {
                 item.IsEnabled = true;
-            }
-        }
-
-        private void BirthDatePicker_LostFocus(object sender, RoutedEventArgs e)
-        {
-            FormatBirthDate();
-        }
-
-        private void BirthDatePicker_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                FormatBirthDate();
-            }
-        }
-
-        private void BirthDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            FormatBirthDate();
-        }
-
-        private void FormatBirthDate()
-        {
-            if (birthDatePicker.SelectedDate.HasValue)
-            {
-                DateTime parsedDate = birthDatePicker.SelectedDate.Value;
-                birthDatePicker.Text = parsedDate.ToString("dd/MM/yyyy");
-
-                int age = DateTime.Now.Year - parsedDate.Year;
-                if (parsedDate > DateTime.Now.AddYears(-age)) age--;
-
-                ageTextBlock.Text = $"Idade: {age} anos";
-                if (age < 35)
-                {
-                    birthDateError.Visibility = Visibility.Visible;
-                    birthDateError.Text = "Treinador deve ter pelo menos 35 anos.";
-                }
-                else
-                {
-                    birthDateError.Visibility = Visibility.Collapsed;
-                }
             }
         }
 
@@ -198,7 +239,10 @@ namespace ArloBrau.Views
                 nameError.Visibility = Visibility.Collapsed;
             }
 
-            if (!birthDatePicker.SelectedDate.HasValue || DateTime.Now.Year - birthDatePicker.SelectedDate.Value.Year < 35)
+            DateTime birthDate = DateTime.MinValue;
+
+            if (birthDayComboBox.SelectedItem == null || birthMonthComboBox.SelectedItem == null || birthYearComboBox.SelectedItem == null ||
+                !DateTime.TryParseExact($"{((ComboBoxItem)birthDayComboBox.SelectedItem).Content.ToString()}/{((ComboBoxItem)birthMonthComboBox.SelectedItem).Content.ToString()}/{((ComboBoxItem)birthYearComboBox.SelectedItem).Content.ToString()}", "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out birthDate) || 2125 - birthDate.Year < 35)
             {
                 birthDateError.Visibility = Visibility.Visible;
                 isValid = false;
@@ -258,9 +302,14 @@ namespace ArloBrau.Views
                 skinColorError.Visibility = Visibility.Collapsed;
             }
 
+            if (startDateComboBox.SelectedItem == null)
+            {
+                startDateTextBlock.Text = "Por favor, selecione uma data de início.";
+                isValid = false;
+            }
+
             if (isValid)
             {
-                var birthDate = birthDatePicker.SelectedDate ?? DateTime.MinValue;
                 var nationality = ((ComboBoxItem)nationalityComboBox.SelectedItem)?.Content?.ToString() ?? string.Empty;
                 var technicalFormation = ((ComboBoxItem)technicalFormationComboBox.SelectedItem)?.Content?.ToString() ?? string.Empty;
                 var playerHistory = ((ComboBoxItem)playerHistoryComboBox.SelectedItem)?.Content?.ToString() ?? string.Empty;
@@ -286,6 +335,10 @@ namespace ArloBrau.Views
                 {
                     string playerId = await Task.Run(() => _playerManagerService.InsertPlayerManager(playerManager));
 
+                    DateTime startDate = GetSelectedStartDate();
+
+                    await Task.Run(() => _gameDateService.InsertGameDate(startDate));
+
                     Dispatcher.Invoke(() =>
                     {
                         loadingScreen.Close();
@@ -309,6 +362,24 @@ namespace ArloBrau.Views
                     MessageBox.Show("Ocorreu um erro ao criar o treinador: " + ex.Message);
                 }
             }
+        }
+
+        private DateTime GetSelectedStartDate()
+        {
+            if (startDateComboBox.SelectedItem != null)
+            {
+                string selectedSeason = ((ComboBoxItem)startDateComboBox.SelectedItem).Content.ToString();
+                switch (selectedSeason)
+                {
+                    case "Temporada 2124/25 AH":
+                        return new DateTime(2124, 5, 1);
+                    case "Temporada 2125/26 AH":
+                        return new DateTime(2125, 5, 1);
+                    default:
+                        throw new InvalidOperationException("Data de início inválida selecionada.");
+                }
+            }
+            throw new InvalidOperationException("Data de início não selecionada.");
         }
     }
 }
